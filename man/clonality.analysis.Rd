@@ -8,7 +8,7 @@
 Function to test clonality of two tumors from the same patient based on their genomewide copy number profiles. This function calculates likelihood ratios and the reference distribution  under the hypothesis of independence.
 }
 \usage{
-clonality.analysis(data, ptlist, pfreq = NULL, refdata = NULL, nmad = 1.25, reference = TRUE, allpairs = TRUE)
+clonality.analysis(data, ptlist, pfreq = NULL, refdata = NULL, nmad = 1.25, reference = TRUE, allpairs = TRUE,segmethod="oneseg", segpar=NULL)
 }
 
 \arguments{
@@ -35,7 +35,17 @@ If TRUE the reference distribution of likelihood ratios is created under  hypoth
   \item{allpairs}{
 If TRUE  all possible pairs of tumors from different patients will be used for reference distribution. If two tumors in a pair are not  exchangeable, for example primary tumor  vs recurrence, or pre-cancerous lesion vs tumor, then allpairs should be set to FALSE and the 'first' tumor should always come earlier in the data before the 'second' tumor for all the patients. Then 'first' tumors of patients will only be paired with 'second' tumors of other patients for the reference distribution.
 }
-
+\item{segmethod}{
+  The segmentation algorithm to be used. The default is "oneseg" which
+  uses the built in function of the same name based on the CBS
+  algorithm. An alternative segmentation algorithm can be used. A function
+  should be created and the name passed as described in the vignette.
+}
+\item{segpar}{
+  The parameters necessary for the segmentation algorithm as a list. For
+  "oneseg" you can specify alpha (default = 0.01) and nperm (default =
+  2000) necessary for the CBS algorithm.
+}
 }
 \details{
 The function implements the statistical procedure designed to distinguish whether the two tumors from the same patient are clonal (have the same progenitor cancer cell) or independent (developed from normal cells independently). At first  data are segmented with one step CBS (Olshen, A. B., Venkatraman, E. S., Lucito, R., Wigler, M. (2004). Circular binary segmentation for the analysis of array-based DNA copy number data. Biostatistics 5: 557-572) that picks at most one copy number change per chromosome arm. Then each chromosome arm is classified as Gain/Loss/Normal based  on a middle segment if there are 3 segments, or  based  on the most outstanding segment if there are 2 segments. The multinomial likelihood ratio comparing these classifications is computed (LR1). For each concordant partial arm gain or loss  we also calculate likelihood ratio that this change is exactly the same in both tumors. These likelihood ratios are multiplied by LR1 to obtain our final statistic, LR2. If LR2 is much greater than 1, that indicates clonality. If LR2 is much smaller than 1, it indicates independence. The reference distribution of LR2 under the hypothesis of independence is obtained  by pairing up tumors from different patients, which are independent by default.
@@ -63,13 +73,13 @@ ChromClass  - is the matrix of chromosome classifications based on the one step 
  
 refLR - matrix with the between patient comparisons (reference distribution under the hypothesis of independence). Has the same structure as LR but the pairs of tumors are selected from different patients.
 
-Note that calculating the reference distrbibution might take along time.
+Note that calculating the reference distribution might take along time.
 
 If the  reference is FALSE,  there is no p-value column in LR and no refLR output.
 
 }
 \references{
-Ostrovnaya, I., Olshen, A. B., Seshan, V.E., Orlow, I., Albertson, D. G. and Begg, C. B. (2010), A metastatis or a second independent 
+Ostrovnaya, I., Olshen, A. B., Seshan, V.E., Orlow, I., Albertson, D. G. and Begg, C. B. (2010), A metastasis or a second independent 
 cancer? Evaluating the clonal origin of tumors using array copy number data. Statistics in Medicine, 29: 1608-1621
 
 Ostrovnaya, I. and Begg, C.  Testing Clonal Relatedness of Tumors Using Array Comparative Genomic Hybridization: A Statistical Challenge Clin Cancer Res March 1, 2010 16:1358-1367

@@ -2,8 +2,8 @@ histogramPlot <-
 function(ptLRvec,refLRvec)
 {
 par(lwd=2)
-a<-hist(log(refLRvec),xlim=c(0.9*min(c(log(refLRvec),log(ptLRvec)),na.rm=TRUE),
-1.1*max(c(log(refLRvec),log(ptLRvec)) ,na.rm=TRUE)),
+a<-hist(log(refLRvec),xlim=c(min(c(log(refLRvec),log(ptLRvec)),na.rm=TRUE),
+max(c(log(refLRvec),log(ptLRvec)) ,na.rm=TRUE)),breaks=30,
 main=paste("Reference distribution of logLR (black), tested pairs (red)"),xlab="")
 b<-hist( log(ptLRvec),plot=FALSE)
 mult<-max(1,round(max(a$counts)/max(b$counts)))

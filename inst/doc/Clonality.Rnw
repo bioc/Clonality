@@ -93,7 +93,10 @@ As the final step of data preparation, we have to create a CNA (copy number arra
 dataCNA<-CNA(as.matrix(data[,c(4:6,28:30)]),maploc=data$Position,chrom=data$Chromosome,sampleid=names(data)[c(4:6,28:30)]) #taking the first 3 patients only to shorten the computation time; use c(4:51) for the full dataset
 @
 
-Our methodology allows at most one genomic change per chromosome arm. If the data had more than 15,000 markers, most outstanding, and likely a short change would be picked up, which would not be representative of the chromosome pattern. To avoid this, one can use the following function:
+Our methodology allows at most one genomic change per chromosome arm, estimated by the one-step Circular Binary Segmentation (CBS) algorithm (\citep{cbs2}). 
+
+
+If the data had many more than 15,000 markers, most outstanding, and likely a short change would be picked up, which would not be representative of the chromosome pattern. To avoid this, one can use the following function:
 
 <<averaging, echo=TRUE,print=FALSE>>=
 dataAve<- ave.adj.probes(dataCNA,2)
@@ -125,7 +128,7 @@ The main information is in the output LR:
 results$LR
 @  
  
-The likelihood ratios LR2 for sample LC02 is much smaller than 1, therefore these tumors are independent. Patients LC03 and LC04 have LR2 much higher than one, and we can conclude that their tumors are clonal. The reference distribution for LR2 under the hypothesis of independence is constructed  by pairing tumors from different patients that are independent by default. The $p$-value column reflects the percentiles of a particular patient's LR2 in the reference distrbution: clonal tumors would have small $p$-values.
+The likelihood ratios LR2 for sample LC02 is much smaller than 1, therefore these tumors are independent. Patients LC03 and LC04 have LR2 much higher than one, and we can conclude that their tumors are clonal. The reference distribution for LR2 under the hypothesis of independence is constructed  by pairing tumors from different patients that are independent by default. The $p$-value column reflects the percentiles of a particular patient's LR2 in the reference distribution: clonal tumors would have small $p$-values.
  
            
 We can view the genomewide plots of patient  LC03 using: 
@@ -145,14 +148,40 @@ The overlap between the histograms of LR2 from original pairs of tumors and the 
 histogramPlot(results$LR[,4], results$refLR[,4])
 @
 
+\subsection{Choice of segmentation algorithm}
+Note that the user can potentially  specify the segmentation method to be used. Currently the default behavior of the clonality.analysis function is to use the CBS
+algorithm to identify the most significant change in each chromosome arm. The
+internal function for this purpose is "oneseg" called as oneseg(x, alpha, nperm, sbdry)
 
+There are 4 arguments to oneseg:\\
+
+     x:  is the finite logratio data ordered by genomic position.  \\
+ alpha:  the significance level used by CBS.                    \\
+ nperm:  the number of permutations for the reference distribution.     \\
+ sbdry:  early stopping boundary for declaring no change 
+             (calculated from alpha and nperm).          \\
+
+The output of this function is a vector of 3 numbers where the first is the
+number of change-points detected (must be 0, 1 or 2), and the second and the
+third numbers are the start and end of the left segment if there is only one
+change-point, and of the middle segment when there are 2 change-points.
+
+The function allows the user to specify alternative alpha and nperm for 'oneseg' as
+a list using the segpar argument e.g. segpar=list(alpha=0.05, nperm=1000). 
+Since sbdry is always calculated in clonality.analysis function from alpha and
+nperm it is not specified.
+
+Alternate segmentation algorithm can be used. It requires the user to create a
+function that takes the ordered logratio from one chromosome arm as argument "x" as in oneseg. The name
+of this function should not be 'oneseg' and is passed through the 'segmethod' argument and all other
+necessary arguments that are needed passed as a list through 'segpar' argument.
 
 
 \section{LOH data}
 
 
 The LOH data has to be combined in a matrix where first column has  marker names and the following columns have LOH calls for each sample.
-Here we simulate a datset with 10 pairs of tumors and 20 markers. First pair of tumor is clonal, and the rest of them are independent. If the marker is heterozygous and there is no LOH, then it is denoted by 0. LOH at maternal or paternal alleles is marked by 1 or 2.
+Here we simulate a dataset with 10 pairs of tumors and 20 markers. First pair of tumor is clonal, and the rest of them are independent. If the marker is heterozygous and there is no LOH, then it is denoted by 0. LOH at maternal or paternal alleles is marked by 1 or 2.
 
 <<LOH data generation, echo=TRUE,print=FALSE>>= 
 set.seed(25)
@@ -167,6 +196,8 @@ LOHclonality(LOHtable,rep(1:10,each=2),pfreq=NULL,noloh=0,loh1=1,loh2=2)
 @
 
 First p-value is small, indicating clonality, for both CM and LR tests. The rest of the p-values are not significant.
+
+Markers that are not informative (e.g. homozygous) in a particular tumor should be given NA instead of a call. Such markers will be dropped from the analysis of this specific patient.
 
 Below are the details of the session information:
 <<sessionInfo, echo=FALSE>>= 

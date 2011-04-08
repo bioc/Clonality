@@ -2,10 +2,10 @@
 \alias{histogramPlot}
 
 \title{
-Histrograms of Likelihood Ratios
+Histrograms of Log-Likelihood Ratios
 }
 \description{
-Function produces the histograms of the within-patient and between-patient Likelihood Ratios.
+Function produces the histograms of the within-patient and between-patient log-Likelihood Ratios.
 }
 \usage{
 histogramPlot(ptLRvec, refLRvec)
@@ -20,7 +20,7 @@ Vector with the between-patient likelihood ratios -  output refLR of clonality.a
 }
 }
 \details{
-Functions plots two overlapping histograms:  within-patient likelihood ratios are in red and between-patient likelihood ratios (reference distribution under the hypothesis of independence) are in black.
+Functions plots two overlapping histograms:  within-patient log-likelihood ratios are in red and between-patient log-likelihood ratios (reference distribution under the hypothesis of independence) are in black.
 }
 
 \examples{

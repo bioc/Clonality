@@ -34,7 +34,7 @@ if (nq>1 & (all(qq[,7]=="Gain") | all(qq[,7]=="Loss")))
 w<-which(datseg$output$ID==dsamnms[2] & datseg$output$chrom==chrlist[ch])
 ll<-qq[1,]
 ll$num.mark<-sum(qq$num.mark)
-ll$seg.mean<-mean(qq$seg.mean)
+ll$seg.mean<-sum(qq$num.mark*qq$seg.mean)/ sum(qq$num.mark)
 datseg$output[w[1],]<-ll
 datseg$output<-datseg$output[-c(w[2]:w[nq]),]
 }
@@ -46,17 +46,20 @@ if (nq>1 & (all(qq[,7]=="Gain") | all(qq[,7]=="Loss")))
 w<-which(datseg$output$ID==dsamnms[1] & datseg$output$chrom==chrlist[ch])
 ll<-qq[1,]
 ll$num.mark<-sum(qq$num.mark)
-ll$seg.mean<-mean(qq$seg.mean)
+ll$seg.mean<-sum(qq$num.mark*qq$seg.mean)/ sum(qq$num.mark)
 datseg$output[w[1],]<-ll
 datseg$output<-datseg$output[-c(w[2]:w[nq]),]
 }
 }
 }
 
-line<-paste("Patient ",ptlist[samnms==ptpair[1]],", odds in favor of ",sep="")
+line<-paste("Patient ",ptlist[samnms==ptpair[1]],sep="")
+if (!is.null( ptLR))
+{
 numb<-as.numeric(ptLR[ptLR[,1]==dsamnms[1] & ptLR[,2]==dsamnms[2],4])
-if (numb<=1) line<-paste(line,"independence = ",nicen(1/numb),sep="") else 
-line<-paste(line,"clonality (metastasis) = ",nicen(numb),sep="")
+if (numb<=1) line<-paste(line,", odds in favor of independence = ",nicen(1/numb),sep="") else 
+line<-paste(line,", odds in favor of clonality (metastasis) = ",nicen(numb),sep="")
+}
 prettyplot(datseg,path="",lab.general=line,nm="",t1lab=paste("Sample",dsamnms[1]),
       t2lab=paste("Sample",dsamnms[2]))
 

@@ -5,7 +5,7 @@
 Per-chromosome plots of the copy number arrays  from a particular patient
 }
 \description{
-The function produces a sequence of plotsfor each chromosome with one-step segmented data  of all samples of a particular patient.
+The function produces a sequence of plots for each chromosome with one-step segmented data  of all samples of a particular patient.
 }
 \usage{
 chromosomePlots(data.seg1, ptlist, ptname,nmad)

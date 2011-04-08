@@ -9,8 +9,8 @@ many=TRUE,gains=NULL,losses=NULL)
 colorS<-function(x)
 {
 x[x=="Normal"]<-"grey"
-x[x=="Gain"]<-"red"
-x[x=="Loss"]<-"blue"
+x[x=="Gain"]<-"blue"
+x[x=="Loss"]<-"red"
 return(x)
 }
 
@@ -22,8 +22,7 @@ ns<-dim(datseg$data)[2]-2
 if (!many) pdf(paste(path,nm,".pdf",sep=""),height=8,width=11)
 if (lab.general=="") lab.general<-nm
 
-if (ns==2)
-{
+
 seg1<-subset(datseg, sample=samnms[1])
 seg2<-subset(datseg, sample=samnms[2])
 
@@ -73,23 +72,25 @@ else
 ppl<-cntr1
 
 points(ppl+seg1$data[,3],pch=".",col="darkgrey",cex=2)
-abline(h=ppl+median(seg1$data[,3],na.rm=TRUE),lwd=0.5,lty=2)
+
 
 points(c(1:ntot)[!is.na(seg1$data[,3])],
       rep(ppl+seg1$output$seg.mean,seg1$output$num.mark),
       col=colorS(rep(seg1$output[,7],seg1$output$num.mark)),pch=".",cex=2)
-abline(h=ppl,lwd=0.5)
+#abline(h=ppl,lwd=0.5)
+abline(h=ppl+median(seg1$data[,3],na.rm=TRUE),lwd=0.5,lty=2)
 seg1<-seg1$output
 
 text(nn,r1[2]-r1[1]+r2[2]-r2[1]-(r1[2]-r1[1]+r2[2]-r2[1])/40,t1lab,cex=0.7,pos=2)
 ppl<-cntr2
 
 points(ppl+seg2$data[,3],pch=".",col="darkgrey",cex=2)
-#abline(h=ppl+median(seg2$data[,3],na.rm=TRUE),lwd=0.5,lty=2)
+
 points(c(1:ntot)[!is.na(seg2$data[,3])],  
       rep(ppl+seg2$output$seg.mean,seg2$output$num.mark),
       col=colorS(rep(seg2$output[,7],seg2$output$num.mark)),pch=".",cex=2)
-abline(h=ppl,lwd=0.5)
+#abline(h=ppl,lwd=0.5)
+abline(h=ppl+median(seg2$data[,3],na.rm=TRUE),lwd=0.5,lty=2)
 seg2<-seg2$output
 
 text(nn,bet-(r1[2]-r1[1]+r2[2]-r2[1])/40,t2lab,cex=0.7,pos=2)
@@ -99,7 +100,6 @@ if (!is.null(gains[1]))
     c(1:sum(seg1$num.mark)),bet+gains*topgl/max(gains),length=0,col="red")
 arrows(c(1:sum(seg1$num.mark)),rep(bet,length(gains)),
     c(1:sum(seg1$num.mark)),bet-losses*topgl/max(losses),length=0,col="blue")
-}
 }
 if (!many) dev.off()
 }

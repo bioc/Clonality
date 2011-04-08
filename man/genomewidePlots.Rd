@@ -31,7 +31,7 @@ If TRUE then the gain/loss  patterns  will be highlighted in accordance with the
 }
 }
 \details{
-Function produces genomewide plots of a pair of tumors.  The log-ratios are plotted in grey in the order of their genomic locations, gains are plotted in red, and losses are plotted in blue.
+Function produces genomewide plots of a pair of tumors.  The log-ratios are plotted in grey in the order of their genomic locations, gains are plotted in blue, and losses are plotted in red.
 }
 
 
