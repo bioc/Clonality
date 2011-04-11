@@ -13,7 +13,7 @@
 \alias{oneseg}
 \alias{prettyplot}
 \alias{refvector}
-\alias{run.oneseg.param}
+\alias{get.oneseg.bdry}
 \alias{segment1}
  \alias{tumors}
  
