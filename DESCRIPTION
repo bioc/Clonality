@@ -12,4 +12,3 @@ Description: Statistical tests for clonality versus independence of tumors from 
 License: GPL-3
 biocViews: Microarray, CopyNumberVariants, Classification, aCGH
 LazyLoad: yes
-Packaged: 2011-04-08 15:11:10 UTC; ostrovni
