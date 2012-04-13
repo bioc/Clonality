@@ -30,4 +30,3 @@ h[t1==0 & t2==0]<-1
 
 return(rbind(a,e,f,g,h))
 }
-

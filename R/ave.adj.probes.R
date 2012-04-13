@@ -13,7 +13,7 @@ function(data, K) {
     else if (!is.na(n)) i <- i+n
     else i <- nrow(data)+1
   }
-  data <- CNA(as.matrix(all.ave[,-1]),chrom=chrs,maploc=as.numeric(all.ave[,1]),sample=names(data)[-c(1,2)])
+  data <- CNA(as.matrix(all.ave[,-1]),chrom=chrs,maploc=as.numeric(all.ave[,1]),sampleid=names(data)[-c(1,2)])
   cat(paste("Total number of markers after averaging is",nrow(data),"\n"))
   return(data)
 }

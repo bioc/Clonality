@@ -37,7 +37,12 @@ function(pfreq, refdata, classall, nmad, segmethod, segpar) {
     pl[pl<0.05]<-0.05
     pg[pg>0.9]<-0.9
     pl[pl>0.9]<-0.9
-
+    
+       w<-which(pg+pl>=0.95)    
+   diff<-pg[w]+pl[w]-0.95
+   pg[w]<-pg[w]- diff/2
+    pl[w]<-pl[w]- diff/2
+    
     pfreq<-cbind(pg,pl,1-pg-pl)
 
     if (any(pfreq<0)) {stop("negative frequencies")}

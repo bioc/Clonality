@@ -199,6 +199,12 @@ First p-value is small, indicating clonality, for both CM and LR tests. The rest
 
 Markers that are not informative (e.g. homozygous) in a particular tumor should be given NA instead of a call. Such markers will be dropped from the analysis of this specific patient.
 
+\section{LOH data for 3 and more tumors}
+It is possible to test clonality of 3 or more tumors using Extended Concordant Mutations test, implemented  in function 'ECMtesting'. The input LOH matrix can be in the same format as for 'LOHclonality' function: first column of a matrix contains marker names, subsequent columns are samples.  For each patient all possible subsets of tumors are tested for clonality, with adjustment for multiple  comparison performed using permutation MinP procedure.
+
+Likelihood model can be extended for 3 or 4 tumors with function 'LRtesting3or4tumors'. The likelihood function depends on 2 parameters  for 3 tumors, and 3 parameters for 4 tumors, allowing for non-symmetric relationship among tumors. Likelihood ratio test is computed and p-value is calculated using permutations. 
+
+
 Below are the details of the session information:
 <<sessionInfo, echo=FALSE>>= 
 sessionInfo()

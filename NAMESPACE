@@ -1,4 +1,4 @@
-export("ave.adj.probes","chromosomePlots","clonality.analysis","genomewidePlots","histogramPlot","LOHclonality", "splitChromosomes")
+export("ave.adj.probes","chromosomePlots","clonality.analysis","genomewidePlots","histogramPlot","LOHclonality", "splitChromosomes","ECMtesting","LRtesting3or4tumors")
 
 importFrom(DNAcopy, CNA)
 
