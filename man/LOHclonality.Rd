@@ -19,10 +19,10 @@ Matrix of LOH  calls. Each row corresponds to a marker. First column contains th
 Vector of the patient IDs in the order the samples appear in the data. For example, if the first three tumors (columns 3, 4, 5 of data) belong to patient A, and the following two (columns 6, 7 of data) belong to patient B, then ptlist=c('ptA', 'ptA', 'ptA', 'ptB', 'ptB').
 }
   \item{refLOHtable}{
-Matrix of LOH  calls that should be used to calculate the LOH frequencies used in Likelihood Ration calculation. The structure is similar to LOHtable.  If refLOHtable is not specified,  frequencies are calcualted from LOHtable.
+Matrix of LOH  calls that should be used to calculate the LOH frequencies used in Likelihood Ration calculation. The structure is similar to LOHtable.  If refLOHtable is not specified,  frequencies are calculated from LOHtable.
 }
   \item{pfreq}{
-Vector of LOH frequencies known from the literature. Should be in the same order as the markers in LOHtable.    If pfreq is not specified,  frequencies are calcualted from LOHtable.
+Vector of LOH frequencies known from the literature. Should be in the same order as the markers in LOHtable.    If pfreq is not specified,  frequencies are calculated from LOHtable.
 }
   \item{noloh}{
 The string or a number that denotes absence of LOH.
@@ -40,7 +40,7 @@ Takes values "CM", "LR" or "both" if only Concordant Mutations test, or only Lik
 \details{
 Function tests clonality of LOH profiles of tumors from the same patient using two tests. Concordant Mutations test has number of markers with concordant LOH as its test statistic. Its theoretical reference distribution under independence is calculated assuming that the maternal and paternal alleles are equally likely to be lost and that the frequencies of LOH are about the same across different markers. 
 
- Likelihood Ratio test uses pre-specified frequencies of LOH to compute Likelihood Ratio statistic. Its reference distrbution is obtained by simulating tumors with the given LOH probabilities, and probability of maternal/paternal mutation estimated from the data. If LOH frequencies are not specified then they are estimated from the data.
+ Likelihood Ratio test uses pre-specified frequencies of LOH to compute Likelihood Ratio statistic. Its reference distribution is obtained by simulating tumors with the given LOH probabilities, and probability of maternal/paternal mutation estimated from the data. If LOH frequencies are not specified then they are estimated from the data.
 
 }
 \value{

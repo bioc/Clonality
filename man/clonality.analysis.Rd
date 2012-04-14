@@ -73,7 +73,7 @@ ChromClass  - is the matrix of chromosome classifications based on the one step 
  
 refLR - matrix with the between patient comparisons (reference distribution under the hypothesis of independence). Has the same structure as LR but the pairs of tumors are selected from different patients.
 
-Note that calculating the reference distribution might take along time.
+Note that calculating the reference distribution might take a long time.
 
 If the  reference is FALSE,  there is no p-value column in LR and no refLR output.
 
