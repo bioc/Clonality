@@ -38,9 +38,10 @@ function(data.seg1, classall, ptlist, pfreq, reference,
     x<-rep(NA,nchr)
     y<-rep(NA,nchr)
     for (chr in c(1:nchr)) {
-      b<-indiv.test(subset(data.seg1,chrom=chrlist[chr],sample=samnms[testset[i,1]]),
+      b<-NA
+      try(b<-indiv.test(subset(data.seg1,chrom=chrlist[chr],sample=samnms[testset[i,1]]),
  subset(data.seg1,chrom=chrlist[chr],sample=samnms[testset[i,2]]),func,
- gainthres[testset[i,]],lossthres[testset[i,]],segmethod=segmethod,segpar=segpar)
+ gainthres[testset[i,]],lossthres[testset[i,]],segmethod=segmethod,segpar=segpar))
       if  (!is.na(b[1]) )
 {x[chr]<-b[[3]]
 y[chr]<-b[[4]]
