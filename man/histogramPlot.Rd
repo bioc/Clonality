@@ -30,8 +30,8 @@ Functions plots two overlapping histograms:  within-patient log-likelihood ratio
 #Clonality of lobular carcinoma in situ and synchronous invasive lobular cancer. Cancer 100(12):2562-72, 2004.
 #library(gdata)    #needed to read .xls files
 #library(DNAcopy) 
-#arrayinfo<-read.xls("http://waldman.ucsf.edu/Colon/nakao.data.xls")  #needed to extract  genomic locations
-#data<-read.xls("http://waldman.ucsf.edu/Breast/Hwang.data.xls")
+#arrayinfo<-read.xls("http://waldmanlab.org/Colon/nakao.data.xls")  #needed to extract  genomic locations
+#data<-read.xls("http://waldmanlab.org/Breast/Hwang.data.xls")
 #data<-data[!is.na(data[,2]),]
 #data<-data[apply(is.na(data),1,sum)<=50,]
 #data<-data[,apply(is.na(data),2,sum)<=1000]
