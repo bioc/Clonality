@@ -43,7 +43,7 @@ package can be used to test whether two tumors are clonal (metastases) or indepe
 
 \section{Copy number profiles}
 
-We will show how to test independence of the copy number profiles from the same patient using breast cancer data. The BAC arrays of the pairs of lobular carcinoma in situ (LCIS) and invasive lobular carcinoma (ILC) were studied in \citep{hwang} and available at \url{http://waldman.ucsf.edu/Breast/Hwang.data.xls}.
+We will show how to test independence of the copy number profiles from the same patient using breast cancer data. The BAC arrays of the pairs of lobular carcinoma in situ (LCIS) and invasive lobular carcinoma (ILC) were studied in \citep{hwang} and available at \url{http://waldmanlab.org/Breast/Hwang.data.xls}.
 We will load package {\tt gdata} in order to read the excel file.
 
 <<load libraries, echo=TRUE,print=FALSE>>=
@@ -55,7 +55,7 @@ library(gdata)
 We will read the dataset and remove rows or columns with too many NAs.
 
 <<read data, echo=TRUE,print=FALSE>>=
-data<-read.xls("http://waldman.ucsf.edu/Breast/Hwang.data.xls")
+data<-read.xls("http://waldmanlab.org/Breast/Hwang.data.xls")
 data<-data[!is.na(data[,2]),]
 data<-data[apply(is.na(data),1,sum)<=50,]
 data<-data[,apply(is.na(data),2,sum)<=1000] 
@@ -70,7 +70,7 @@ Rows of data correspond to probes (genomic markers). The first column is probe n
 Since there are no genomic locations in this dataset, we will download another dataset and map the genomic locations to the probes. If the genomic locations were known, we would not need this step and the column with the probe names.
  
 <<prep data, echo=TRUE,print=FALSE>>= 
-arrayinfo<-read.xls("http://waldman.ucsf.edu/Colon/nakao.data.xls")  #needed to extract  genomic locations
+arrayinfo<-read.xls("http://waldmanlab.org/Colon/nakao.data.xls")  #needed to extract  genomic locations
 data$Position<-arrayinfo$Mb[match(toupper(as.character(data[,1])),toupper(as.character(arrayinfo[,1])))]
 data<-data[!is.na(data$Position),]
 @
