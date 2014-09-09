@@ -96,33 +96,67 @@ Irina Ostrovnaya \email{ostrovni@mskcc.org}
 }
 
 \examples{
-   #Analysis of paired breast samples from study
-#Hwang ES, Nyante SF, Chen YY, Moore D, DeVries S, Korkola JE, Esserman LJ, and Waldman FM. 
-#Clonality of lobular carcinoma in situ and synchronous invasive lobular cancer. Cancer 100(12):2562-72, 2004.
-library(gdata)    #needed to read .xls files
-library(DNAcopy) 
-arrayinfo<-read.xls("http://waldmanlab.org/Colon/nakao.data.xls")  #needed to extract  genomic locations
-data<-read.xls("http://waldmanlab.org/Breast/Hwang.data.xls")
-data<-data[!is.na(data[,2]),]
-data<-data[apply(is.na(data),1,sum)<=50,]
-data<-data[,apply(is.na(data),2,sum)<=1000]
-data$Position<-arrayinfo$Mb[match(toupper(as.character(data[,1])),toupper(as.character(arrayinfo[,1])))]
-data<-data[!is.na(data$Position),]
-dim(data)
-length(unique(paste(data$Chromosome, data$Position))) #there are repeated genomic locations
-data<-data[c(TRUE,data$Position[-1]!=data$Position[-1864]),] #discard probes with repeated genomic locations
-data<-data[data$Chromosome<=22,] #getting rid of X and Y chromosomes
-dataCNA<-CNA(as.matrix(data[,c(4:6,28:30)]),maploc=data$Position,chrom=data$Chromosome,sampleid=names(data)[c(4:6,28:30)]) #taking the first 3 patients only to shorten the computation time; use c(4:51) for the full dataset
+#Analysis of simulated data
 
-dataCNA$maploc<-dataCNA$maploc*1000 #transforming maploc to Kb scale
-dataCNA$chrom<- splitChromosomes( dataCNA$chrom,dataCNA$maploc)  #splits the chromosomes into arms
+ 
+#Simulate the dataset with 10 pairs of tumors with 22 chromosomes, 100 markers each
+#Simulated log-ratios are equal to signal + noise
+#Signal: each chromosome has 50% chance to be normal, 30% to be whole-arm loss/gain, and 20% to be partial arm loss/gain, where endpoints are drawn at random, loss/gain means are drawn from normal distribution
+#There are no chromosomes with recurrent losses/gains
+#Noise: drawn from normal distribution with mean 0, standard deviation 0.4
+#First 9 patients have independent tumors, last patient has two tumors with identical signal, independent noise
 
 
-ptlist<-substr(names(dataCNA)[-c(1,2)],1,4)
-samnms<-names(dataCNA)[-c(1,2)]
+set.seed(100)
+chrom<-paste("chr",rep(c(1:22),each=100),"p",sep="")
+chrom[nchar(chrom)==5]<-paste("chr0",substr(chrom[nchar(chrom)==5] ,4,5),sep="")
+maploc<- rep(c(1:100),22)
+data<-NULL
+for (pt in 1:9)  #first 9 patients have independent tumors
+{
+tumor1<-tumor2<- NULL
+mean1<- rnorm(22) 
+mean2<- rnorm(22)
+for (chr in 1:22)
+{ 
+  r<-runif(2) 
+if (r[1]<=0.5) tumor1<-c(tumor1,rep(0,100))   
+  else if   (r[1]>0.7)  tumor1<-c(tumor1,rep(mean1[chr],100))
+  else  { i<-sort(sample(1:100,2))
+        tumor1<-c(tumor1,mean1[chr]*c(rep(0,  i[1]),rep(1, i[2]-i[1]), rep(0,  100-i[2])))
+        }
+if (r[2]<=0.5) tumor2<-c(tumor2,rep(0,100))
+  else if   (r[2]>0.7)  tumor2<-c(tumor2,rep(mean2[chr],100))
+  else   {i<-sort(sample(1:100,2))
+       tumor2<-c(tumor2,mean2[chr]*c(rep(0,  i[1]),rep(1, i[2]-i[1]), rep(0,  100-i[2])))
+         }
+}
+data<-cbind(data,tumor1,tumor2)
+}
 
-results<-clonality.analysis(dataCNA, ptlist,  pfreq = NULL, refdata = NULL, nmad = 1.25, 
- reference = TRUE, allpairs = FALSE)
+#last patient has identical profiles
+tumor1<- NULL
+mean1<- rnorm(22) 
+for (chr in 1:22)
+{ 
+  r<-runif(1) 
+if (r<=0.4) tumor1<-c(tumor1,rep(0,100))   
+  else if   (r>0.6)  tumor1<-c(tumor1,rep(mean1[chr],100))
+  else  { i<-sort(sample(1:100,2))
+        tumor1<-c(tumor1,mean1[chr]*c(rep(0,  i[1]),rep(1, i[2]-i[1]), rep(0,  100-i[2])))
+        }
+
+}
+data<-cbind(data,tumor1,tumor1)
+
+data<-data+matrix(rnorm( 44000,mean=0,sd=0.4) ,nrow=2200,ncol=20)
+dataCNA<-CNA(data,chrom=chrom,maploc=maploc,sampleid=paste("pt",rep(1:10,each=2),rep(1:2,10)))
+ptlist<- paste("pt",rep(1:10,each=2),sep=".")
+samnms<-paste("pt",rep(1:10,each=2),rep(1:2,10),sep=".")
+results<-clonality.analysis(dataCNA, ptlist,  pfreq = NULL, refdata = NULL, nmad = 1, 
+ reference = TRUE, allpairs = TRUE)
+
+
               
 #genomewide plots of pairs of tumors from the same patient
 pdf("genomewideplots.pdf",height=7,width=11)
@@ -148,7 +182,7 @@ dev.off()
 
 for (i in unique(ptlist))
 {
-pdf(paste("pt",i,".pdf",sep=""),height=7,width=11)
+pdf(paste("Patient", i,".pdf",sep=""),height=7,width=11)
 chromosomePlots(results$OneStepSeg, ptlist,ptname=i,nmad=1.25)
 dev.off()
 }
