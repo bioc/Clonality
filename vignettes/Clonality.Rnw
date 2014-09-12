@@ -43,54 +43,73 @@ package can be used to test whether two tumors are clonal (metastases) or indepe
 
 \section{Copy number profiles}
 
-We will show how to test independence of the copy number profiles from the same patient using breast cancer data. The BAC arrays of the pairs of lobular carcinoma in situ (LCIS) and invasive lobular carcinoma (ILC) were studied in \citep{hwang} and available at \url{http://waldmanlab.org/Breast/Hwang.data.xls}.
-We will load package {\tt gdata} in order to read the excel file.
-
-<<load libraries, echo=TRUE,print=FALSE>>=
-library(DNAcopy)
-library(Clonality)
-library(gdata)
-@ 
-
-We will read the dataset and remove rows or columns with too many NAs.
+We will show how to test independence of the copy number profiles from the same patient using simulated data. First we simulate the dataset with 10 pairs of tumors with 22 chromosomes, 100 markers each. Simulated log-ratios are equal to signal + noise. The signal is defined in the following way: each chromosome has 50\% chance to be normal, 30\% to be whole-arm loss/gain, and 20\% to be partial arm loss/gain, where endpoints are drawn at random, and loss/gain means are drawn from standard normal distribution. There are no chromosomes with recurrent losses/gains. Noise is drawn from normal distribution with mean 0, standard deviation 0.4 and added to the signal. First 9 patients have independent tumors, while last patient has two tumors with identical signal, but independent noise.
 
 <<read data, echo=TRUE,print=FALSE>>=
-data<-read.xls("http://waldmanlab.org/Breast/Hwang.data.xls")
-data<-data[!is.na(data[,2]),]
-data<-data[apply(is.na(data),1,sum)<=50,]
-data<-data[,apply(is.na(data),2,sum)<=1000] 
-@ 
+
+set.seed(100)
+chrom<-paste("chr",rep(c(1:22),each=100),"p",sep="")
+chrom[nchar(chrom)==5]<-paste("chr0",substr(chrom[nchar(chrom)==5] ,4,5),sep="")
+maploc<- rep(c(1:100),22)
+data<-NULL
+for (pt in 1:9)  #first 9 patients have independent tumors
+{
+tumor1<-tumor2<- NULL
+mean1<- rnorm(22) 
+mean2<- rnorm(22)
+for (chr in 1:22)
+{ 
+  r<-runif(2) 
+if (r[1]<=0.5) tumor1<-c(tumor1,rep(0,100))   
+  else if   (r[1]>0.7)  tumor1<-c(tumor1,rep(mean1[chr],100))
+  else  { i<-sort(sample(1:100,2))
+        tumor1<-c(tumor1,mean1[chr]*c(rep(0,  i[1]),rep(1, i[2]-i[1]), rep(0,  100-i[2])))
+        }
+if (r[2]<=0.5) tumor2<-c(tumor2,rep(0,100))
+  else if   (r[2]>0.7)  tumor2<-c(tumor2,rep(mean2[chr],100))
+  else   {i<-sort(sample(1:100,2))
+       tumor2<-c(tumor2,mean2[chr]*c(rep(0,  i[1]),rep(1, i[2]-i[1]), rep(0,  100-i[2])))
+         }
+}
+data<-cbind(data,tumor1,tumor2)
+}
+
+#last patient has identical profiles
+tumor1<- NULL
+mean1<- rnorm(22) 
+for (chr in 1:22)
+{ 
+  r<-runif(1) 
+if (r<=0.4) tumor1<-c(tumor1,rep(0,100))   
+  else if   (r>0.6)  tumor1<-c(tumor1,rep(mean1[chr],100))
+  else  { i<-sort(sample(1:100,2))
+        tumor1<-c(tumor1,mean1[chr]*c(rep(0,  i[1]),rep(1, i[2]-i[1]), rep(0,  100-i[2])))
+        }
+
+}
+data<-cbind(data,tumor1,tumor1)
+
+data<-data+matrix(rnorm( 44000,mean=0,sd=0.4) ,nrow=2200,ncol=20)
+
+
+samnms<-paste("pt",rep(1:10,each=2),rep(1:2,10),sep=".")@ 
 
 <<echo=TRUE,print=TRUE>>=
-data[1:5,1:10]
+as.matrix(dataCNA)[1:5,1:10]
 @           
 
-Rows of data correspond to probes (genomic markers). The first column is probe name; the second column is the chromosome where the probe is located; the third column is probe's genomic position recorded as an index. All subsequent columns correspond to the samples and contain log-ratios. 
+Rows of data correspond to probes (genomic markers). The first column is the chromosome and the second column is probe's genomic position. All subsequent columns correspond to the samples and contain log-ratios. Here the genomic is an index, but normally it would be actual probe's location along the genome, and then 'splitChromosomes' function should be used to divide the chromosome into p and q arms, thus increasing the number of independent units for the analysis.
 
-Since there are no genomic locations in this dataset, we will download another dataset and map the genomic locations to the probes. If the genomic locations were known, we would not need this step and the column with the probe names.
+
  
-<<prep data, echo=TRUE,print=FALSE>>= 
-arrayinfo<-read.xls("http://waldmanlab.org/Colon/nakao.data.xls")  #needed to extract  genomic locations
-data$Position<-arrayinfo$Mb[match(toupper(as.character(data[,1])),toupper(as.character(arrayinfo[,1])))]
-data<-data[!is.na(data$Position),]
-@
-
-
-Now we will remove repeated genomic locations:
-<<remove repeated maplocs, echo=TRUE,print=FALSE>>= 
-length(unique(paste(data$Chromosome, data$Position))) #there are repeated genomic locations
-data<-data[c(TRUE,data$Position[-1]!=data$Position[-1864]),] #discard probes with repeated genomic locations
-data<-data[data$Chromosome<=22,] #getting rid of X and Y chromosomes
-@
-
 <<echo=TRUE,print=TRUE>>=
 dim(data)
 @ 
  
-As the final step of data preparation, we have to create a CNA (copy number array) object as described DNAcopy. To save computational time, we only take the first three patients. (As a result, gain/loss frequencies used for analysis will be very imprecise and the reference distribution will have very few comparisons.) 
-
+As the next step of data preparation, we have to create a CNA (copy number array) object as described DNAcopy. 
 <<CNA, echo=TRUE,print=FALSE>>= 
-dataCNA<-CNA(as.matrix(data[,c(4:6,28:30)]),maploc=data$Position,chrom=data$Chromosome,sampleid=names(data)[c(4:6,28:30)]) #taking the first 3 patients only to shorten the computation time; use c(4:51) for the full dataset
+dataCNA<-CNA(data,chrom=chrom,maploc=maploc,sampleid=samnms)
+
 @
 
 Our methodology allows at most one genomic change per chromosome arm, estimated by the one-step Circular Binary Segmentation (CBS) algorithm (\citep{cbs2}). 
@@ -102,25 +121,18 @@ If the data had many more than 15,000 markers, most outstanding, and likely a sh
 dataAve<- ave.adj.probes(dataCNA,2)
 @
 
-Here we have averaged every two consecutive marker. For this dataset, though, averaging is not necessary.
+Here we have averaged every two consecutive markers. For this dataset, though, averaging is not necessary.
 
-
-The chromosomes should be split into arms before the clonality analysis since it increases the number of independent genomic units.
-
-<<split chromosomes, echo=TRUE,print=FALSE>>= 
-dataCNA$maploc<-dataCNA$maploc*1000 #transforming maploc to Kb scale
-dataCNA$chrom<- splitChromosomes(dataCNA$chrom,dataCNA$maploc)  #splits the chromosomes into arms
-@
 
 
 Next we have to create a vector of patient labels that matches the samples.
 <<echo=TRUE,print=FALSE>>= 
-ptlist<-substr(names(dataCNA)[-c(1,2)],1,4)
+ptlist<- paste("pt",rep(1:10,each=2),sep=".")
 @
 
 Finally, we can run the clonality analysis:
 <<main clonality analysis, echo=TRUE,print=FALSE>>= 
-results<-clonality.analysis(dataCNA, ptlist,   nmad = 1.25,  reference = TRUE, allpairs = FALSE)
+results<-clonality.analysis(dataCNA, ptlist,  pfreq = NULL, refdata = NULL, nmad = 1,  reference = TRUE, allpairs = TRUE)
 @
 
 The main information is in the output LR:
@@ -128,18 +140,18 @@ The main information is in the output LR:
 results$LR
 @  
  
-The likelihood ratios LR2 for sample LC02 is much smaller than 1, therefore these tumors are independent. Patients LC03 and LC04 have LR2 much higher than one, and we can conclude that their tumors are clonal. The reference distribution for LR2 under the hypothesis of independence is constructed  by pairing tumors from different patients that are independent by default. The $p$-value column reflects the percentiles of a particular patient's LR2 in the reference distribution: clonal tumors would have small $p$-values.
+The likelihood ratios LR2 for patients 1:9 are much smaller than 1, therefore these tumors are independent. Patient 10 has LR2 much higher than one, and we can conclude that this patient's tumors are clonal. The reference distribution for LR2 under the hypothesis of independence is constructed  by pairing tumors from different patients that are independent by default. The $p$-value column reflects the percentiles of a particular patient's LR2 in the reference distribution: clonal tumors would have small $p$-values.
  
            
-We can view the genomewide plots of patient  LC03 using: 
+We can view the genomewide plots of patient  10 using: 
 
 <<genomewidePlots, fig=TRUE, echo=TRUE>>=
-genomewidePlots(results$OneStepSeg, results$ChromClass,ptlist , c("LC03LCIS", "LC03ILC"),results$LR,  plot.as.in.analysis = TRUE) 
+genomewidePlots(results$OneStepSeg, results$ChromClass,ptlist , c("pt.10.1", "pt.10.2"),results$LR,  plot.as.in.analysis = TRUE) 
 @
 
 Patterns for each chromosome would be plotted by:
 %<<fig=TRUE,echo=TRUE>>=
-%chromosomePlots(results$OneStepSeg, ptlist,ptname="LC03",nmad=1.25)
+chromosomePlots(results$OneStepSeg, ptlist,ptname="pt.10",nmad=1)
 % @
  
 
