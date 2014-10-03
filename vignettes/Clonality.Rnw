@@ -92,7 +92,8 @@ data<-cbind(data,tumor1,tumor1)
 data<-data+matrix(rnorm( 44000,mean=0,sd=0.4) ,nrow=2200,ncol=20)
 
 
-samnms<-paste("pt",rep(1:10,each=2),rep(1:2,10),sep=".")@ 
+samnms<-paste("pt",rep(1:10,each=2),rep(1:2,10),sep=".")
+@ 
 
 <<echo=TRUE,print=TRUE>>=
 as.matrix(dataCNA)[1:5,1:10]
