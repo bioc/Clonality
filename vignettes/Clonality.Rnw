@@ -93,11 +93,10 @@ data<-data+matrix(rnorm( 44000,mean=0,sd=0.4) ,nrow=2200,ncol=20)
 
 
 samnms<-paste("pt",rep(1:10,each=2),rep(1:2,10),sep=".")
+
 @ 
 
-<<echo=TRUE,print=TRUE>>=
-as.matrix(dataCNA)[1:5,1:10]
-@           
+         
 
 Rows of data correspond to probes (genomic markers). The first column is the chromosome and the second column is probe's genomic position. All subsequent columns correspond to the samples and contain log-ratios. Here the genomic is an index, but normally it would be actual probe's location along the genome, and then 'splitChromosomes' function should be used to divide the chromosome into p and q arms, thus increasing the number of independent units for the analysis.
 
@@ -110,6 +109,7 @@ dim(data)
 As the next step of data preparation, we have to create a CNA (copy number array) object as described DNAcopy. 
 <<CNA, echo=TRUE,print=FALSE>>= 
 dataCNA<-CNA(data,chrom=chrom,maploc=maploc,sampleid=samnms)
+as.matrix(dataCNA)[1:5,1:10]
 
 @
 
