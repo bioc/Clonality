@@ -108,6 +108,7 @@ dim(data)
  
 As the next step of data preparation, we have to create a CNA (copy number array) object as described DNAcopy. 
 <<CNA, echo=TRUE,print=FALSE>>= 
+library(DNAcopy)
 dataCNA<-CNA(data,chrom=chrom,maploc=maploc,sampleid=samnms)
 as.matrix(dataCNA)[1:5,1:10]
 
