@@ -38,8 +38,7 @@ Memorial Sloan-Kettering Cancer Center\\
 \section{Overview}
 
 This document presents an overview of the {\tt Clonality} package. This
-package can be used to test whether two tumors are clonal (metastases) or independent (double primaries) using their copy number or loss of heterozygosity (LOH) profiles. For LOH data it implements Concordant Mutations (CM) test \citep{begg07} and Likelihood Ratio (LR) test \citep{lrloh}. For copy number profiles the package implements the methodology based on the likelihood ratio described in \citep{cghSM}.
-
+package can be used to test whether two tumors are clonal (metastases) or independent (double primaries) using their somatic mutations, copy number or loss of heterozygosity (LOH) profiles. For LOH data it implements Concordant Mutations (CM) test \citep{begg07} and Likelihood Ratio (LR) test \citep{lrloh}. For copy number profiles the package implements the methodology based on the likelihood ratio described in \citep{cghSM}. For somatic mutations we included the methods described in \citep{aas} and \citep{audrey}.
 
 \section{Copy number profiles}
 
@@ -217,6 +216,87 @@ Markers that are not informative (e.g. homozygous) in a particular tumor should 
 It is possible to test clonality of 3 or more tumors using Extended Concordant Mutations test, implemented  in function 'ECMtesting'. The input LOH matrix can be in the same format as for 'LOHclonality' function: first column of a matrix contains marker names, subsequent columns are samples.  For each patient all possible subsets of tumors are tested for clonality, with adjustment for multiple  comparison performed using permutation MinP procedure.
 
 Likelihood model can be extended for 3 or 4 tumors with function 'LRtesting3or4tumors'. The likelihood function depends on 2 parameters  for 3 tumors, and 3 parameters for 4 tumors, allowing for non-symmetric relationship among tumors. Likelihood ratio test is computed and p-value is calculated using permutations. 
+
+
+\section{Inference using profiles of somatic mutations}
+
+\subsection{Likelihood model}
+
+In \citep{aas} we presented statistical test for evaluating evidence for clonality against null hypothesis that the two tumors are independent using their mutational profiles obtained by next generation sequencing, such as targeted panel sequencing or whole exome sequencing. It utilizes conditional likelihood model where for each patient only loci where at least one tumor has a mutation are contributing to the test statistic. Marginal frequencies of mutations are assumed to be known and usually can be computed from TCGA data or other similar resources.
+
+Below we download the exome sequencing data from study of Lobular Carcinoma in Situ (LCIS) and Invaisve lobular carcinomas  (ILC) and Invasive Ductal Carcinomas (IDC) in the same patients (\citep{lcis}). Marginal probabilities in the column {\it probi} are obtained from breast cancer TCGA data and are not directly applicable to other cancers.
+
+
+<<LR estimation, echo=TRUE,print=TRUE>>= 
+data(lcis)
+n<-nrow(lcis)
+summary(lcis$probi)
+table(lcis$TK47IDC.TK47LCIS1 )
+lcis$probi[lcis$TK47IDC.TK47LCIS1==1]
+@
+
+Here variable TK47IDC.TK47LCIS1 takes values 0 if a mutation is not observed, 1 if shared mutation is observed in both tumors, and 2 if it's a private mutation. We can see that IDC and LCIS tumors in patient 47 have 1 mutation in common, and 57 present in only one of the tumors. The single match is at a locus where the mutations are relatively rare, having probability 0.000986.
+
+Below is the test of clonality of these two tumors. Note that the p-value is calculated using the simulated null distribution, thus setting the random seed is recommended for reproducibility. We will assign private mutations to tumor 1 here since the likelihood doesn't depend on which tumor has the private mutation.
+
+<<LR test, echo=TRUE,print=FALSE>>= 
+x1<-x2<-rep(0,n)
+x1[lcis$TK47IDC.TK47LCIS1==1]<-x2[lcis$TK47IDC.TK47LCIS1==1]<-1
+x1[lcis$TK47IDC.TK47LCIS1==2]<-1
+set.seed(1) 
+@
+
+<<LR test2, echo=TRUE,print=TRUE>>= 
+SNVtest(x1,x2,lcis$probi)
+@
+
+The p-value of 0.021 confirms that these two tumors are clonal, i.e. originate from the same cell harboring the matching mutation.
+
+\subsection{Random effects model}
+Here we show how to test the independence of the somatic mutation profile, following the random effects model proposed by Mauguen et al (http://biostats.bepress.com/mskccbiostat/paper33, \citep{audrey}). The example uses the data from 22 cases with both lobular carcinoma in situ (LCIS) and an invasive breast tumor \citep{lcis}. Data from whole-exome sequencing were available and used to compare the mutation profile of the two tumors. Those data correspond to the dataset \textit{lcis} included in the package.
+The random-effect model is estimated on the data using the following code:
+
+<<REM estimation, echo=TRUE,print=FALSE>>= 
+data(lcis)
+mod <- mutation.rem(lcis)
+@
+<<REM estimation2, echo=TRUE,print=TRUE>>= 
+print(mod)
+@
+In this example, the estimation converged (convergence status=0). The proportion of clonal cases in the LCIS dataset is estimated to be 75\%. The function allows the computation of standard-errors using the option sd.err=TRUE.
+The individual probabilities of clonality for those 22 cases are obtained using:
+
+<<REM proba, echo=TRUE,print=FALSE>>= 
+data(lcis)
+mod <- mutation.rem(lcis, proba=TRUE)
+
+@
+<<REM proba2, echo=TRUE,print=TRUE>>= 
+print(mod)
+@
+
+The individual probability of clonality varies from 31\% for case 68 with no shared mutations to >99\% for several cases having 2 or more mutations shared between the two tumors.
+
+Finally, once the model is estimated on a given population, it is possible to estimate the probability of clonality of a new case using:
+
+<<REM proba new case, echo=TRUE,print=FALSE>>= 
+# generate a case with 30 mutations
+# probabilities of each observed mutation
+set.seed(159)
+pi <- runif(30,0.001,0.13)
+# mutation 1=shared or 2=private
+newpair <- cbind(pi,rbinom(30,1,1-pi^2)+1)
+# generate the matrix of likelihood values
+new.likmat <- grid.lik(xigrid=c(0, seq(0.0005, 0.9995, by=0.001)), 
+                       as.matrix(newpair[,c(-1)]), newpair[,1])
+# probability of being clonal using the model previoulsy estimated
+proba <- mutation.proba(c(mod$mu, mod$sigma, mod$pi), t(as.matrix(new.likmat)) )
+@
+<<REM proba new case2, echo=TRUE,print=TRUE>>= 
+print(proba)
+@
+
+For this hypothetical case with 30 private mutations, the probability of being clonal is 47\%.
 
 
 Below are the details of the session information:
