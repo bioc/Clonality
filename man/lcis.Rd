@@ -8,7 +8,7 @@
   For each sample the log-ratios at each consecutive K number of probes are averaged.
 }
 \usage{
-  data(lcis
+  data(lcis)
 }
 
 \details{

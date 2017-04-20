@@ -5,7 +5,8 @@
 \title{Print for the mutation.rem function}
 \usage{
 ## S3 method for class 'mutation.rem'
-print(x, ...)
+
+\method{print}{mutation.rem}(x, ...)
 }
 \arguments{
 \item{x}{a mutation.rem object}

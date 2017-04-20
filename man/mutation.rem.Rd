@@ -4,7 +4,7 @@
 \alias{mutation.rem}
 \title{Estimation of the random-effect model for clonality based on mutations.}
 \usage{
-mutation.rem(mutmat, proba=FALSE, print.proba=FALSE, xigrid = c(0, seq(0.0005, 0.9995, by=0.001)), init.para = c(0,1,0.5) )
+mutation.rem(mutmat, proba=FALSE, sd.err = FALSE, print.proba=proba, print.sd.err=sd.err, xigrid = c(0, seq(0.0005, 0.9995, by=0.001)), init.para = c(0,1,0.5) )
 }
 \arguments{
 \item{mutmat}{Matrix containing the data, with all mutations in rows and the tumor pairs in columns. 
@@ -37,6 +37,9 @@ of the random-effect xi, and pi is the proportion of clonal cases. The default i
   \item{likelihood}{Value of the maximized likelihood.}
   \item{convergence}{Convergence status (from the function optim).}
   \item{conv.message}{Convergence message (from the function optim).}
+  \item{se.mu}{Standard error of the parameter mu.}
+  \item{se.sigma}{Standard error of the parameter sigma.}
+  \item{se.pi}{Standard error of the parameter pi.}
   \item{pr.clonal}{Individual probabilities of clonality.}
 }
 \description{
@@ -76,4 +79,5 @@ Audrey Mauguen \email{mauguena@mskcc.org} and Venkatraman E. Seshan.
 Mauguen A, Seshan VE, Ostrovnaya I, Begg CB. Estimating the Probability of Clonal Relatedness of 
 Pairs of Tumors in Cancer Patients. Submitted.
 }
+
 

@@ -5,7 +5,7 @@
 \title{Print for the mutation.proba function}
 \usage{
 ## S3 method for class 'mutation.proba'
-print(x, ...)
+\method{print}{mutation.proba}(x, ...)
 }
 \arguments{
 \item{x}{a mutation.proba object}
