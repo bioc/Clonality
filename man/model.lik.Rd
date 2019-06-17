@@ -18,8 +18,7 @@ the maximization. The corresponding combination of the parameters will thus be e
 \item{xigrid}{Grid of the values of xi, corresponding to its domain of definition.}
 }
 \value{
-Return the likelihood value of the model for the given parameters. This likelihood function is 
-the one that is maximized in the clonal.est function.
+Return the likelihood value of the model for the given parameters.
 }
 \description{
 This function computes the likelihood of the model.

@@ -1,8 +1,7 @@
 
 #' LCIS data
 #'
-#' Data from the LCIS study, with mutations listed for all pairs of 
-#' LCIS-invasive tumors in a series of breast cancer cases.
+#' Data from the LCIS study
 #'
 #' @docType data
 #'

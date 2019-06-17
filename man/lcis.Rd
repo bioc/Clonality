@@ -5,7 +5,8 @@
   Breast cancer data
 }
 \description{
-  For each sample the log-ratios at each consecutive K number of probes are averaged.
+Data from the LCIS study, with mutations listed for all pairs of LCIS-invasive tumors in a series of breast cancer cases.
+
 }
 \usage{
   data(lcis)
@@ -14,10 +15,11 @@
 \details{
   This is exome sequencing data from study of Lobular Carcinoma in Situ (LCIS) and  
   Invaisve lobular carcinomas  (ILC) or Invasive Ductal Carcinomas (IDC) in the same patients.
-  First column called probi contains marginal probabilities that   are obtained from breast cancer TCGA data and are not directly applicable to other cancers.
-  Each subsequent column contains a pair of tumors where value 0  denotes that mutation is not 
-observed, 1 if shared mutation is observed in both tumors, and 2 if it is a private mutation observed in only one tumor.
+  Each row represents single mutation in a patient. This structure is similar to MAF (mutation annotation format) files.
+
+The columns are "PatientID, Lesion,Hugo_Symbol, Chromosome, Start_Position, Reference_Allele, Tumor_Seq_Allele2 (Alternative allele), Tumor_Sample_Barcode (sample ID). Lesion contains Lesion type, which takes values DCIS (ductal carcinoma in situ), IDC (invasive ductal carcinoma), IDC2 (second profiled IDC), ILC (invasive lobular carcinoma), LCIS and LCIS1,2, etc.
 }
+
 \references{
   Begg CB, Ostrovnaya I, Carniello JV, Sakr RA, Giri D, Towers R, Schizas M, De Brot M, Andrade VP, Mauguen A, Seshan VE, King TA. "Clonal relationships between lobular carcinoma in situ and other breast malignancies.", Breast Cancer Res. 2016 Jun 23;18(1):66. doi: 10.1186/s13058-016-0727-z.
 

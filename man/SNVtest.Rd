@@ -54,24 +54,24 @@ clonality.analysis() for test using genomewide copy number profiles; mutation.pr
 #Begg CB, Ostrovnaya I, Carniello JV, Sakr RA, Giri D, Towers R, Schizas M, De Brot M, Andrade VP, Mauguen A, Seshan VE, King TA. "Clonal relationships between lobular carcinoma in situ and other breast malignancies.", Breast Cancer Res. 2016 Jun 23;18(1):66. doi: 10.1186/s13058-016-0727-z.
 
 data(lcis)
+data(freqdata)
 n<-nrow(lcis)
 
-#Example of artificially generated independent tumor pair with marginal mutation frequencies lcis$probi
+#Example of artificially generated independent tumor pair with marginal mutation frequencies p
+p<-runif(n)/10
+x1<-as.numeric(runif(n)<=p)
+x2<-as.numeric(runif(n)<=p)
+SNVtest(x1,x2,p)
 
-x1<-as.numeric(runif(n)<=lcis$probi)
-x2<-as.numeric(runif(n)<=lcis$probi)
-SNVtest(x1,x2,lcis$probi)
 
+#Analysis of data from patient 53
+mut.matrix<-create.mutation.matrix(lcis )
+table(mut.matrix$TK53IDC2,mut.matrix$TK53LCIS2)
 
-#Analysis of data from patient 47
-table(lcis$TK47IDC.TK47LCIS1 )
-#variable TK47IDC.TK47LCIS1  takes values 0 if mutation not observed, 1 if shared mutation (observed in both tumors), 2 if private mutation.
+freq<-get.mutation.frequencies(rownames(mut.matrix),"BRCA") 
 
-x1<-x2<-rep(0,n)
-x1[lcis$TK47IDC.TK47LCIS1 ==1]<-x2[lcis$TK47IDC.TK47LCIS1 ==1]<-1
-#we will assign private mutations to tumor 1 here since the likelihood doesn't depend on which tumor has the private mutation
-x1[lcis$TK47IDC.TK47LCIS1 ==2]<-1
-SNVtest(x1,x2,lcis$probi)
+SNVtest(mut.matrix$TK53IDC2,mut.matrix$TK53LCIS2,freq)
+
 
 }
 

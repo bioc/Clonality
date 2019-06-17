@@ -1,5 +1,9 @@
 SNVtest<-
 function(tumor1, tumor2, pfreq, nrep=1000) {
+  w<-tumor1+tumor2>0
+  tumor1<-tumor1[w]
+  tumor2<-tumor2[w]
+  pfreq<-pfreq[w]
   
   n <- length(pfreq)
   if (n!=length(tumor1) |n!=length(tumor2)) stop("Number of mutations in tumor1 and tumor2 should be equal to the length of pfreq")

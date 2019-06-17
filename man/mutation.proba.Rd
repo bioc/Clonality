@@ -29,9 +29,12 @@ the option "proba=TRUE" can be used in the mutation.rem function.
 \examples{
 #___ Analysis of LCIS data
 data(lcis)
+ mut.matrix<-create.mutation.matrix(lcis ,rem=TRUE)
+freq<-get.mutation.frequencies(rownames(mut.matrix),"BRCA") 
+
 
 #__ Parameters estimation
-mod <- mutation.rem(lcis)
+mod <- mutation.rem(cbind(freq, mut.matrix))
 mod
 
 #__ Probability of being clonal for a new subject

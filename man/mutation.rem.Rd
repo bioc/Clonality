@@ -4,7 +4,7 @@
 \alias{mutation.rem}
 \title{Estimation of the random-effect model for clonality based on mutations.}
 \usage{
-mutation.rem(mutmat, proba=FALSE, sd.err = FALSE, print.proba=proba, print.sd.err=sd.err, xigrid = c(0, seq(0.0005, 0.9995, by=0.001)), init.para = c(0,1,0.5) )
+mutation.rem(mutmat, proba=FALSE, print.proba=FALSE, xigrid = seq(0.0005, 0.9995, by=0.001), init.para = c(0,1,0.5), conv.crit = 1e-5, niter=300 )
 }
 \arguments{
 \item{mutmat}{Matrix containing the data, with all mutations in rows and the tumor pairs in columns. 
@@ -13,34 +13,30 @@ The data are coded as 0=mutation not observed, 1=shared mutation (observed in bo
 
 \item{proba}{Indicates whether to compute the individual probabilities of clonality for each pair. The default is FALSE.}
 
-\item{sd.err}{Indicates whether to compute the standard errors of the estimated parameters. The default is FALSE.}
-
 \item{print.proba}{Indicates whether the individual probabilities of clonality should be printed in the output. The default 
-is TRUE if proba=TRUE and FALSE if proba=FALSE.}
-
-\item{print.sd.err}{Indicates whether the the standard errors of the estimated parameters should be printed in the output. The default 
-is TRUE if sd.err=TRUE and FALSE if sd.err=FALSE.}
+is FALSE.}
 
 \item{xigrid}{Grid of the values of xi used to compute the integration; it corresponds to the domain of 
-definition of xi. The default is c(0, seq(0.0005, 0.9995, by=0.001)).}
+definition of xi. The default is seq(0.0005, 0.9995, by=0.001).}
 
 \item{init.para}{Initial values of the parameters for the optimization. The order of the parameters is 
 c(mu, sigma, pi), where mu and sigma are the mean and variance of the lognormal distribution 
 of the random-effect xi, and pi is the proportion of clonal cases. The default is c(0,1,0.5).}
+
+\item{conv.crit}{Criteria used to defined convergence (on all three parameters). The default is 1e-5.}
+
+\item{niter}{Maximum number of iterations used for the EM algorithm. The default is 300.}
 }
 \value{
-\item{mu}{Estimated mean of the random-effect distribution.}
-  \item{sigma}{Estimated standard-deviation of the random-effect distribution.}
-  \item{pi}{Estimated proportion of clonal pairs in the population.}
-  \item{likmat}{Grid of likelihood values for each tumor pair (rows) and each value of xi (columns) needed for the function 
- clonal.proba that computes the individual probabilities of clonality.}
-  \item{likelihood}{Value of the maximized likelihood.}
-  \item{convergence}{Convergence status (from the function optim).}
-  \item{conv.message}{Convergence message (from the function optim).}
-  \item{se.mu}{Standard error of the parameter mu.}
-  \item{se.sigma}{Standard error of the parameter sigma.}
-  \item{se.pi}{Standard error of the parameter pi.}
-  \item{pr.clonal}{Individual probabilities of clonality.}
+	\item{mu}{Estimated mean of the random-effect distribution.}
+	\item{sigma}{Estimated standard-deviation of the random-effect distribution.}
+	\item{pi}{Estimated proportion of clonal pairs in the population.}
+	\item{likmat}{Grid of likelihood values for each tumor pair (rows) and each value of xi (columns) needed for the function 
+		clonal.proba that computes the individual probabilities of clonality.}
+	\item{likelihood}{Value of the maximized likelihood.}
+	\item{convergence}{Convergence status, 0=no convergence, 1=convergence reached.}
+	\item{n.iter}{Number of iterations used.}
+	\item{pr.clonal}{Individual probabilities of clonality.}
 }
 \description{
 The model estimates the proportion of clonal cases in a population, and the distribution of the clonality signal.
@@ -50,26 +46,24 @@ The function estimates a random effects model in which the random effect (the cl
 reflects the somatic similarity of the tumors on a scale from 0 to 1, where 0 represents independence and higher values represent 
 clonal tumors that are increasingly similar. The proportion of cases that are clonal is represented by the parameter pi. Thus 
 the likelihood is a compound of (1-pi) cases that have a clonality signal of exactly 0, and pi cases that have a clonality signal 
-drawn from a normal random effects distribution with mean mu and variance sigma^2. The program estimates all of the parameters and 
-their variances using maximum likelihood. The output provides parameter estimates (mu, sigma, pi). The example dataset presented 
+drawn from a lognormal random effects distribution with mean mu and variance sigma^2. The program estimates the parameters using an 
+EM algorithm to maximize the likelihood. The output provides parameter estimates (mu, sigma, pi). The example dataset presented 
 contains data from a study in which each patient has both a pre-malignant lobular carcinoma in situ (LCIS) and an invasive 
 breast cancer, and we wish to estimate the proportion of these cases for which the LCIS was a direct precursor to the invasive cancer.
-The standard errors are computed using the inverse of minus the Hessian matrix.
 }
 \examples{
 #___ Analysis of LCIS data
 data(lcis)
+ mut.matrix<-create.mutation.matrix(lcis ,rem=TRUE)
+freq<-get.mutation.frequencies(rownames(mut.matrix),"BRCA") 
+
 
 #__ Parameters estimation
-mod <- mutation.rem(lcis)
-mod
-
-#__ Parameters estimation with standard errors
-mod <- mutation.rem(lcis, sd.err=TRUE)
+mod <- mutation.rem(cbind(freq, mut.matrix))
 mod
 
 #__ Probability of being clonal
-mod <- mutation.rem(lcis, proba=TRUE)
+mod <- mutation.rem(cbind(freq, mut.matrix), proba=TRUE)
 mod
 }
 \author{
@@ -77,7 +71,5 @@ Audrey Mauguen \email{mauguena@mskcc.org} and Venkatraman E. Seshan.
 }
 \references{
 Mauguen A, Seshan VE, Ostrovnaya I, Begg CB. Estimating the Probability of Clonal Relatedness of 
-Pairs of Tumors in Cancer Patients. Submitted.
-}
-
+Pairs of Tumors in Cancer Patients. Biometrics 2018;74(1):321-330.}
 

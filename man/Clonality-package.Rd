@@ -6,7 +6,7 @@
 Clonality testing
 }
 \description{
-Statistical tests for clonality versus independence of tumors from the same patient based on their LOH or genomewide copy number profiles.
+Statistical tests for clonality versus independence of tumors from the same patient based on their LOH,  copy number or mutational profiles.
 }
 \details{
 \tabular{ll}{
@@ -20,5 +20,5 @@ LazyLoad: \tab yes\cr
 }
 \author{
           
-Irina Ostrovnaya \email{ostrovni@mskcc.org}
+Irina Ostrovnaya \email{ostrovni@mskcc.org}, Audrey Mauguen \email{mauguena@mskcc.org}
 }
