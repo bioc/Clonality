@@ -5,7 +5,7 @@
 Testing relatedness (clonality) of two tumors from the same patient using profiles of somatic mutations
 }
 \description{
-Function to test clonality of two tumors from the same patient based on their mutational profiles. This function calculates conditional likelihood ratio relying only on loci where at least one of the tumors have a mutation, and p-values is calculated under the reference distribution under the hypothesis of independence.
+Function to test clonality of two tumors from the same patient based on their mutational profiles. This function calculates conditional likelihood ratio relying only on loci where at least one of the tumors has a mutation, and p-value is calculated under the reference distribution under the hypothesis of independence.
 }
 \usage{
 SNVtest(tumor1, tumor2, pfreq, nrep = 1000)
@@ -29,7 +29,7 @@ Only loci where at least one tumor has a mutation contribute to the model. The n
 }
 \value{
 The output is a vector with 5 values:
-c("n1","n2","n_match", "LRstat","maxKsi","LRpvalue")
+"n1","n2","n_match", "LRstat","maxKsi","LRpvalue"
 
  \item{n1 }{Number of mutations in the first tumor.}
  \item{n2 }{Number of mutations in the second tumor}
@@ -58,6 +58,7 @@ data(freqdata)
 n<-nrow(lcis)
 
 #Example of artificially generated independent tumor pair with marginal mutation frequencies p
+n<-100
 p<-runif(n)/10
 x1<-as.numeric(runif(n)<=p)
 x2<-as.numeric(runif(n)<=p)

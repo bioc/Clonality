@@ -93,6 +93,33 @@ SNVtest(mut.matrix$TK53IDC2,mut.matrix$TK53LCIS2  ,freq)
   The p-value of 0.014 confirms that these two tumors are clonal, i.e. originate from the same cell harboring the matching mutation.
 
 
+  \subsection{Two-site test}
+It is also possible to test clonality of two tumors that come from two different sites or organs with different mutational profiles using function "SNVtest2".  The null hypothesis is that two tumors come from 2 different sites with different marginal proabilities, and  there are two alternative hypotheses: that two tumors are clonal and come from site 1, and that they are clonal and come from site 2. Here we simulate two tumors from lung and colon tumors on the set of mutations common in either of these two types.
+<<Lung and colon frequencies , echo=TRUE,print=TRUE>>= 
+  
+mut.list<-row.names(freqdata[freqdata[,"COAD"]>=1 | freqdata[,"LUAD"]>=1,][-1,])[1:10000] #restricting set of loci to 10,000 so that the data are more similar to targeted sequencing
+freqCOAD<-get.mutation.frequencies(mut.list,"COAD")/freqdata[1,"COAD"] 
+freqCOAD[freqCOAD==min(freqCOAD)]<-1/(freqdata[1,"COAD"] +freqdata[1,"LUAD"]  ) #arbitrarily specified background mutation rate
+freqLUAD<-get.mutation.frequencies(mut.list,"LUAD")/freqdata[1,"LUAD"]  
+freqLUAD[freqLUAD==min(freqLUAD)]<-1/(freqdata[1,"COAD"] +freqdata[1,"LUAD"]  )  #arbitrarily specified background mutation rate
+
+@
+  
+  
+  
+  Below is the test of clonality of these two tumors. Note that the p-value is calculated using the simulated null distribution, thus setting the random seed is recommended for reproducibility.
+
+
+
+<<LR test2, echo=TRUE,print=TRUE>>= 
+  set.seed(1) 
+x1<-as.numeric(runif(length(mut.list))<=freqCOAD)
+x2<-as.numeric(runif(length(mut.list))<=freqLUAD)
+SNVtest2(x1,x2  ,cbind(freqCOAD,freqLUAD))
+@
+  
+  The p-value confirms that these two tumors are independent.
+
 
 \subsection{Random effects model}
 Here we show how to test the independence of the somatic mutation profile, following the random effects model proposed by Mauguen et al (http://biostats.bepress.com/mskccbiostat/paper33, \citep{audrey}). The example uses the data from 17 cases with both lobular or ductal carcinoma in situ (LCIS or DCIS)  and an invasive lobular or ductal  breast cancer (ILC or IDC) \citep{lcis}. Data from whole-exome sequencing were available and used to compare the mutation profile of the two tumors.

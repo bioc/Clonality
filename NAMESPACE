@@ -1,4 +1,4 @@
-export("create.mutation.matrix","get.mutation.frequencies","clonEM", "grid.lik" ,"mutation.rem","mutation.proba","SNVtest", "ave.adj.probes","chromosomePlots","clonality.analysis","genomewidePlots","histogramPlot","LOHclonality", "splitChromosomes","ECMtesting","LRtesting3or4tumors")
+export("SNVtest2","create.mutation.matrix","get.mutation.frequencies","clonEM", "grid.lik" ,"mutation.rem","mutation.proba","SNVtest", "ave.adj.probes","chromosomePlots","clonality.analysis","genomewidePlots","histogramPlot","LOHclonality", "splitChromosomes","ECMtesting","LRtesting3or4tumors")
 
 S3method(print,mutation.proba)
 
