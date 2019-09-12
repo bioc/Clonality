@@ -5,18 +5,22 @@
  TCGA pancancer mutation frequencies
 }
 \description{
-Data from the LCIS study, with mutations listed for all pairs of LCIS-invasive tumors in a series of breast cancer cases.
-
+Mutational data from TCGA
 }
 \usage{
   data(freqdata)
 }
 
 \details{
-  Object 'freqdata' contains the frequencies of the mutations observed in the exome sequencing data in 33 cancer types profiled by TCGA. There are 33 columns for 33 cancer types abbreviated in TCGA as GBM, OV, LUAD, etc. (for the full list of abbreviations see https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations). The first column is the number of patients profiled in each cancer type. Each subsequent row is a mutation, where number of patients with this particular mutation in each cancer type is given. The mutation ID, contained in the row names of 'freqdata', is of the following format: {"Chromosome Location RefAllele AltAllele"}, each entry separated by space, where chromosome is a number 1-22 or "X" or "Y"; location is genomic location in  GRCh37 build; RefAllele is a reference allele and AltAllele is Alternative allele/Tumor_Seq_Allele2. For example "10 100003849 G A", is the mutation at chromosome 10, genomic location 100003849, where reference allele G is substituted with A, or "10 100011448 - CCGCTGCAAT" is the insertion of "CCGCTGCAAT" at chromosome 10, location 100011448. The ref and alt alleles follow standard TCGA maf file notations.
+  Object 'freqdata' contains the frequencies of the mutations observed in the exome sequencing data in 3 cancer types, COAD, LUAD, and BRCA, profiled by TCGA. 
   
-This data object was obtained using the following code:
-
+  
+  Full set of 33 cancer types is available by loading a full object in GitHub 'load(url("https://github.com/IOstrovnaya/MutFreq/blob/master/freqdata.RData?raw=true"))'. After that proceed with the analysis in the same way.
+  
+  There are 3 columns for 3 cancer types abbreviated in TCGA as COAD, LUAD, and BRCA  (for the full list of abbreviations see https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations). The first column is the number of patients profiled in each cancer type. Each subsequent row is a mutation, where number of patients with this particular mutation in each cancer type is given. The mutation ID, contained in the row names of 'freqdata', is of the following format: {"Chromosome Location RefAllele AltAllele"}, each entry separated by space, where chromosome is a number 1-22 or "X" or "Y"; location is genomic location in  GRCh37 build; RefAllele is a reference allele and AltAllele is Alternative allele/Tumor_Seq_Allele2. For example "10 100003849 G A", is the mutation at chromosome 10, genomic location 100003849, where reference allele G is substituted with A, or "10 100011448 - CCGCTGCAAT" is the insertion of "CCGCTGCAAT" at chromosome 10, location 100011448. The ref and alt alleles follow standard TCGA maf file notations.
+  
+Object 'freqdata' was obtained using the following code:
+```
 #'  The file mc3.v0.2.8.PUBLIC.maf can be downloaded from https://gdc.cancer.gov/about-data/publications/mc3-2017
 #' pancan<-read.table(  "mc3.v0.2.8.PUBLIC.maf",sep="\t",header=T,quote="") 
 #' 
@@ -47,7 +51,9 @@ This data object was obtained using the following code:
 #' rownames(freqdata)<-names(table(pancan$mut[w]))
 #' colnames(freqdata)<-types
 #' freqdata<-rbind(ntypes,freqdata)
-
+#' freqdata<-freqdata[,c(c("COAD","LUAD","BRCA"))]
+#' freqdata<-freqdata[apply(freqdata,1,sum)>0,]
+```
 
 }
 \references{

@@ -1,7 +1,7 @@
 
 #' freqdata data
 #'
-#' Data from the TCGA with mutation counts in 33 cancer types.
+#' Data from the TCGA with mutation counts in 3 cancer types,  COAD, LUAD, and BRCA.
 #'
 #' @docType data
 #'

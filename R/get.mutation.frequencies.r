@@ -49,8 +49,8 @@ function(xmut.ids, tcga.cancer.type=NULL, reference.data=NULL,combine.with.TCGA=
   if (!is.null(tcga.cancer.type)) #estimation using TCGA
       {  data(freqdata)
         if (!(tcga.cancer.type %in% colnames(freqdata))) 
-    stop("tcga.cancer.type should be one of 33 TCGA cancer types:  ACC  BLCA BRCA CESC CHOL COAD DLBC ESCA GBM  HNSC KICH KIRC KIRP LAML LGG  LIHC LUAD LUSC
-MESO OV   PAAD PCPG PRAD READ SARC SKCM STAD TGCT THCA THYM UCEC UCS  UVM \n See https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations for details")
+    stop("This function relies on object 'freqdata' that contains frequencies from 3 tcga cancer types:  COAD, LUAD, and BRCA.\n 'tcga.cancer.type' has to be one of these 3 abbreviations.   \n Full set of 33 cancer types is available by loading a full object in GitHub 'load(url(\"https://github.com/IOstrovnaya/MutFreq/blob/master/freqdata.RData?raw=true\"))' that contains cancer types:  
+ACC  BLCA BRCA CESC CHOL COAD DLBC ESCA GBM  HNSC KICH KIRC KIRP LAML LGG  LIHC LUAD LUSC MESO OV   PAAD PCPG PRAD READ SARC SKCM STAD TGCT THCA THYM UCEC UCS  UVM \n See https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations for details")
  f<-freqdata[match(xmut.ids,rownames(freqdata)), tcga.cancer.type]
   names(f)<-xmut.ids
   if (all(is.na(f)))    warning("None of the mutations were seen in TCGA.  Make sure  xmut.ids are in the correct format: check ?get.mutation.frequencies")

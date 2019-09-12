@@ -13,4 +13,4 @@ Description: Statistical tests for clonality versus independence of
         copy number profiles
 License: GPL-3
 LazyLoad: yes
-biocViews: Microarray, CopyNumberVariation, Classification, aCGH
+biocViews: CopyNumber, Classification, aCGH, Mutations, Diagnosis, metastasis
