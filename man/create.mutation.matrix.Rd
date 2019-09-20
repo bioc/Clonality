@@ -27,8 +27,7 @@ observed, 1 if shared mutation is observed in both tumors, and 2 if it is a priv
 Data frame with matrix of mutations
 }
 \references{
-
-Ostrovnaya, Irina, Venkatraman E. Seshan, and Colin B. Begg. 2015. “USING SOMATIC MUTATION DATA TO TEST TUMORS FOR CLONAL RELATEDNESS.” The Annals of Applied Statistics 9 (3): 1533–48. https://doi.org/10.1214/15-AOAS836.
+Ostrovnaya, Irina, Venkatraman E. Seshan, and Colin B. Begg. 2015. USING SOMATIC MUTATION DATA TO TEST TUMORS FOR CLONAL RELATEDNESS. The Annals of Applied Statistics 9 (3): 1533-48. 
 
 }
 \author{

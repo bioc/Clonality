@@ -48,7 +48,7 @@ Vector of frequencies with names same as 'xmut.ids'
 }
 \references{
 
-Ostrovnaya, Irina, Venkatraman E. Seshan, and Colin B. Begg. 2015. “USING SOMATIC MUTATION DATA TO TEST TUMORS FOR CLONAL RELATEDNESS.” The Annals of Applied Statistics 9 (3): 1533–48. https://doi.org/10.1214/15-AOAS836.
+Ostrovnaya, Irina, Venkatraman E. Seshan, and Colin B. Begg. 2015. USING SOMATIC MUTATION DATA TO TEST TUMORS FOR CLONAL RELATEDNESS. The Annals of Applied Statistics 9 (3): 1533-48. 
 
 }
 \author{

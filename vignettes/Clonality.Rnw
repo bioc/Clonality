@@ -54,14 +54,7 @@ In \citep{aas} we presented statistical test for evaluating evidence for clonali
 
 \subsection{Estimating frequency of observed mutations using TCGA or other datasets}
 
-Marginal frequencies of mutations are assumed to be known and used as fixed quantities in the likelihood model. They can be estimated using function {\it get.mutation.frequencies} using either the built-in mutational data from TCGA pancancer study, or reference mutational data, or combination of the two. Currently, the built-in mutational frequencies datset 'freqdata' contains 3 cancer types: COAD, LUAD and BRCA. This object can be replaced by the full set of 33 cancer types using 
-<<Frequency estimation, echo=TRUE,print=FALSE,eval=FALSE>>= 
-
-load(url("https://github.com/IOstrovnaya/MutFreq/blob/master/freqdata.RData?raw=true"))
-@
-
-
-after which the same analysis pipeline applies.
+Marginal frequencies of mutations are assumed to be known and used as fixed quantities in the likelihood model. They can be estimated using function {\it get.mutation.frequencies} using either the built-in mutational data from TCGA pancancer study, or reference mutational data, or combination of the two. Currently, the built-in mutational frequencies datset 'freqdata' contains 3 cancer types: COAD, LUAD and BRCA  - see note about other types below. 
 
 Note that these frequencies used in the test can never be zero even if the mutation was never seen before, so the observed mutations seen in the particular patient are essentially added to the external data. For example, if in TCGA/reference dataset mutation was observed in X/n samples, then the frequency of this mutation is (X+1)/(n+1). The whole dataset for which clonality is tested can also be added to the frequency calculation. The mutations are matched with TCGA/reference dataset using mutation IDs that have the following format: {Chromosome Location RefAllele AltAllele}, each entry separated by space,  where chromosome is a number 1-22 or X or Y; location is genomic location in  GRCh37 build; RefAllele is a reference allele and AltAllele is Alternative allele.  The ref and alt alleles follow standard TCGA maf file notations.
 
@@ -76,6 +69,53 @@ mut.matrix<-create.mutation.matrix(lcis )
 freq<-get.mutation.frequencies(rownames(mut.matrix),"BRCA") 
 @
 
+If other cancer types are needed then internal object freqdata can be replaced by the full set of 33 cancer types using 
+
+<<link, echo=TRUE,print=FALSE,eval=FALSE>>= 
+
+load(url("https://github.com/IOstrovnaya/MutFreq/blob/master/freqdata.RData?raw=true"))
+@
+
+
+after which the same analysis pipeline applies.
+
+ This full object freqdata was obtained using the following code:
+ 
+<<code, echo=TRUE,print=FALSE,eval=FALSE>>= 
+
+#  The file mc3.v0.2.8.PUBLIC.maf can be downloaded from https://gdc.cancer.gov/about-data/publications/mc3-2017
+ pancan<-read.table(  "mc3.v0.2.8.PUBLIC.maf",sep="\t",header=T,quote="") 
+ 
+#  The file clinical.tsv.csv can be downloaded from https://portal.gdc.cancer.gov/projects - > check TCGA and clinical on the left panel -> 
+# click on 11,315 Cases across 33 Projects on the upper right corner -> click on Clinical->TSV button below
+ pancaninfo<-read.table("clinical.tsv",sep="\t",header=T)
+ 
+ 
+ pancaninfo$project_id<-substr(pancaninfo$project_id,6,11)
+ pancan$Tumor_Sample_Barcode<-substr(pancan$Tumor_Sample_Barcode,1,12)
+ pancan$mut<-paste(pancan$Chromosome,pancan$Start_Position,pancan$Reference_Allele,pancan$Tumor_Seq_Allele2)
+ pancan$type<-pancaninfo$project_id[match(pancan$Tumor_Sample_Barcode,pancaninfo$submitter_id)]
+ pancan<-pancan[!duplicated(paste(pancan$Tumor_Sample_Barcode,pancan$mut)),]
+ pancan<-pancan[!is.na(pancan$type),]
+ 
+ pancan$mut<-as.factor(pancan$mut)
+ types<-unique(pancan$type)
+ ntypes<-NULL
+freqdata<-NULL
+for (i in types)
+{w<-pancan$type==i
+s<-length(unique(pancan$Tumor_Sample_Barcode[w]))
+ ntypes<-c(ntypes,s)
+ freqdata<-cbind(freqdata,table(pancan$mut[w]))
+ 
+ }
+ 
+ rownames(freqdata)<-names(table(pancan$mut[w]))
+ colnames(freqdata)<-types
+ freqdata<-rbind(ntypes,freqdata)
+ freqdata<-freqdata[,c(c("COAD","LUAD","BRCA"))]
+ freqdata<-freqdata[apply(freqdata,1,sum)>0,]
+@
   
   \subsection{Likelihood model}
 
