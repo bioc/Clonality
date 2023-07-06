@@ -1,8 +1,8 @@
 Package: Clonality
 Type: Package
 Title: Clonality testing
-Version: 1.35.0
-Date: 2023-07-05
+Version: 1.47.0
+Date: 2019-12-09
 Author: Irina Ostrovnaya
 Maintainer: Irina Ostrovnaya <ostrovni@mskcc.org>
 Depends: R (>= 2.12.2), DNAcopy
@@ -13,4 +13,13 @@ Description: Statistical tests for clonality versus independence of
         copy number profiles
 License: GPL-3
 LazyLoad: yes
-biocViews: CopyNumber, Classification, aCGH, Mutations, Diagnosis, metastasis
+biocViews: CopyNumber, Classification, aCGH, Mutations, Diagnosis,
+        metastasis
+git_url: https://git.bioconductor.org/packages/Clonality
+git_branch: master
+git_last_commit: 788755f
+git_last_commit_date: 2022-11-01
+Date/Publication: 2022-11-04
+NeedsCompilation: no
+Packaged: 2022-11-04 22:24:42 UTC; biocbuild
+Built: R 4.3.0; ; 2022-11-05 12:06:39 UTC; windows
