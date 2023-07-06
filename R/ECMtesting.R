@@ -25,7 +25,7 @@ minpadjECM<-function(tum,Nsim=1000,noloh=0,loh1=1,loh2=2)
 m<-apply(tum!=noloh, 2, sum)
 J<-nrow(tum)
 nt=ncol(tum)
-pvs<-allECM(tum,noloh,loh1,loh2)
+pvs<-as.numeric(allECM(tum,noloh,loh1,loh2))
 n<-length(pvs)
 if (nt>2)
 {
