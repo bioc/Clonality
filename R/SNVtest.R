@@ -53,7 +53,7 @@ function(tumor1, tumor2, pfreq, nrep=1000) {
   f2<-function(x){fLR2(as.numeric(x),pfreq[tumor1 + tumor2 > 0])}
   ts2<-apply (gen,2,f2) 
     out <- c(sum(tumor1),sum(tumor2),sum(tumor1==tumor2 & tumor2==1) ,
-           lr,sum(ts2>=lr[1]) /nrep )
+           lr,pmax(sum(ts2>=lr[1]) /nrep, 1/nrep ) )
 
   names(out) <- c("n1","n2","n_match", "LRstat","maxKsi","LRpvalue")
   
