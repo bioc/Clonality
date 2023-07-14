@@ -1,7 +1,7 @@
 Package: Clonality
 Type: Package
 Title: Clonality testing
-Version: 1.49.0
+Version: 1.49.1
 Date: 2019-12-09
 Author: Irina Ostrovnaya
 Maintainer: Irina Ostrovnaya <ostrovni@mskcc.org>
@@ -23,3 +23,4 @@ Date/Publication: 2022-11-04
 NeedsCompilation: no
 Packaged: 2022-11-04 22:24:42 UTC; biocbuild
 Built: R 4.3.0; ; 2022-11-05 12:06:39 UTC; windows
+PackageStatus: Deprecated
